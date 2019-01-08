@@ -9,7 +9,7 @@ function search()
 	var outputText = "";
 	console.log(input);
 
-	fetch('https://api.worldofwarships.com/wows/clans/list/?application_id=demo&search=' + input)
+	fetch('https://api.worldofwarships.com/wows/clans/list/?application_id=65e92b6a331f1aa07d01dd46ed8f4821&search=' + input)
 	.then(response => response.json())
 	.then(data => 
 	{
@@ -27,7 +27,7 @@ function search()
 	})
 	.then(clanID =>
 	{
-		fetch('https://api.worldofwarships.com/wows/clans/info/?application_id=demo&clan_id=' + clanID)
+		fetch('https://api.worldofwarships.com/wows/clans/info/?application_id=65e92b6a331f1aa07d01dd46ed8f4821&clan_id=' + clanID)
 		.then(response => response.json())
 		.then(data =>
 		{
