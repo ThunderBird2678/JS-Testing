@@ -20,6 +20,55 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function generateClanAverages()
+{
+	var avgKills = 0;
+	var avgWinrate = 0;
+	var avgDamage = 0;
+	// var avgTier;
+
+	for(key in playersDictionary)
+	{
+		avgKills += (playersDictionary[key].statistics.pvp.frags / playersDictionary[key].statistics.pvp.battles);
+		avgWinrate += (playersDictionary[key].statistics.pvp.wins / playersDictionary[key].statistics.pvp.battles);
+		avgDamage += (playersDictionary[key].statistics.pvp.damage_dealt / playersDictionary[key].statistics.pvp.battles);
+		getAvgTier(key);
+	}
+
+	avgKills = avgKills / Object.keys(playersDictionary).length;
+	avgWinrate = avgWinrate / Object.keys(playersDictionary).length;
+	avgDamage = avgDamage / Object.keys(playersDictionary).length;
+
+	addToPage("Clan average kills: " + avgKills + "<br>");
+	addToPage("Clan average winrate: " + avgWinrate * 100 + "%<br>");
+	addToPage("Clan average damage: " + avgDamage + "<br>");
+}
+
+function getAvgTier(userID)
+{
+	var avgTier = 0;
+	getAPIInfo('https://api.worldofwarships.com/wows/ships/stats/?application_id=65e92b6a331f1aa07d01dd46ed8f4821&account_id=' + userID + '&fields=pvp.battles%2Cship_id')
+	.then(async info =>
+	{
+		info = info.data[userID];
+		for(item in info)
+		{
+			var isDone = false;
+			console.log(info[item].ship_id);
+			getAPIInfo('https://api.worldofwarships.com/wows/encyclopedia/ships/?language=en&application_id=65e92b6a331f1aa07d01dd46ed8f4821&ship_id=' + info[item].ship_id + '&fields=tier')
+			.then(shipInfo =>
+			{
+				console.log(shipInfo.data[info[item].ship_id].tier);
+				isDone = true;
+			})
+			while(!isDone)
+			{
+				await sleep(50);
+			}
+		}
+	})
+}
+
 function startUp()
 {
 	document.getElementById("holder").innerHTML = "";
@@ -85,58 +134,14 @@ function startUp()
 			await sleep(500);
 		}
 	})
-	.then(test=>
+	.then(func =>
 	{
-		console.log("When does this print?");
+		addToPage("Clan Averages: <br>")
+		generateClanAverages();
 	})
 }
 
-// 					for(var i = 0; i < numMembers; i++)
-// 					{
-// 						playersDictionary[objec.members_ids[i]] = "TEST: " + objec.members_ids[i];
-// 					}
 
-// 					for(var i = 0; i < numMembers; i++)
-// 					{
-// 						var playerID = objec.members_ids[i];
-// 						fetch("https://api.worldofwarships.com/wows/account/info/?application_id=65e92b6a331f1aa07d01dd46ed8f4821&account_id=" + playerID)
-// 						.then
-// 						(
-// 							function(response)
-// 							{
-// 								return response.json();
-// 							}
-// 						)
-// 						.then
-// 						(
-// 							function(rawObject)
-// 							{
-// 								var playerData = jsonPath(rawObject, "$.data.*");
-// 								playerData = playerData[0];
-// 								playersDictionary[playerData.account_id] = playerData;
-// 							}
-// 						)
-// 					}
-// 				}
-// 			)
-// 			.then
-// 			(
-// 				function()
-// 				{
-// 					doneSetup();
-// 				}
-// 			)
-// 		}
-// 	)
-// }
-
-// function doneSetup()
-// {
-// 	for(var key in playersDictionary)
-// 	{
-// 		console.log(key);
-// 	}
-// }
 
 
 
